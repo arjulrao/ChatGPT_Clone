@@ -1,9 +1,13 @@
 const { Server} = require("socket.io");
 const jwt = require('jsonwebtoken');
-const userModel = require("../models/user.model")
 const cookie = require("cookie");    //It is not cookie-parser it is different package
+/* Models */
+const userModel = require("../models/user.model");
+const messageModel = require("../models/message.model");
 
 const aiService = require("../services/ai.service");
+
+
 
 function initSocketServer(httpServer) {
 
@@ -37,11 +41,30 @@ function initSocketServer(httpServer) {
 
         socket.on("ai-message", async(messagePayload)=>{
             // console.log(messagePayload.content)
-            const response = await aiService.generateResponse(messagePayload.content);
 
-            socket.emit('ai-response', {
-                content : response,
-                chat : messagePayload.chat
+        /* Save chat history - User */
+        if(messagePayload.content !== undefined || null){
+            await messageModel.create({
+                chat: messagePayload.chat,
+                user: socket.user._id,
+                content: messagePayload.content,
+                role: "user"
+            })
+        }
+
+        const response = await aiService.generateResponse(messagePayload.content);
+
+        /* Save model response */
+        await messageModel.create({
+            chat: messagePayload.chat,
+            user: socket.user._id,
+            content: response,
+            role: "model"
+        })
+
+        socket.emit('ai-response', {
+            content : response,
+            chat : messagePayload.chat
             })
         })
         socket.on("disconnect", ()=> {
