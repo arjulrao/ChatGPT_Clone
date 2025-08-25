@@ -52,10 +52,12 @@ function initSocketServer(httpServer) {
 
         /* Chat History || Short term Memory */
 
-        const chatHistory = await messageModel.find({
+        const chatHistory = (await messageModel.find({
             chat: messagePayload.chat
-        });
-        console.log(chatHistory)
+        }).sort({ createdAt: -1}).limit(20).lean()).reverse()
+        /* Limit How many message it remember*/
+
+        // console.log(chatHistory)
         /* We can not pass short term history directly AI dot't read it  */
         // console.log('Chat History:', chatHistory.map(item => {
         //     return { //The syntax is as par GEMINI docs
