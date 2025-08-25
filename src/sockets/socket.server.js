@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const userModel = require("../models/user.model")
 const cookie = require("cookie");    //It is not cookie-parser it is different package
 
+const aiService = require("../services/ai.service");
+
 function initSocketServer(httpServer) {
 
     const io = new Server(httpServer, {});
@@ -30,8 +32,18 @@ function initSocketServer(httpServer) {
     })
 
     io.on("connection", (socket) => {
+        // console.log("User Connected: ", socket.user)
         console.log("Socket server is connected : ",  socket.id)
 
+        socket.on("ai-message", async(messagePayload)=>{
+            // console.log(messagePayload.content)
+            const response = await aiService.generateResponse(messagePayload.content);
+
+            socket.emit('ai-response', {
+                content : response,
+                chat : messagePayload.chat
+            })
+        })
         socket.on("disconnect", ()=> {
         console.log("Socket Server is Disconnect ")
         })
