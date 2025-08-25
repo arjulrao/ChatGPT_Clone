@@ -43,16 +43,36 @@ function initSocketServer(httpServer) {
             // console.log(messagePayload.content)
 
         /* Save chat history - User */
-        if(messagePayload.content !== undefined || null){
             await messageModel.create({
                 chat: messagePayload.chat,
                 user: socket.user._id,
                 content: messagePayload.content,
                 role: "user"
             })
-        }
 
-        const response = await aiService.generateResponse(messagePayload.content);
+        /* Chat History || Short term Memory */
+
+        const chatHistory = await messageModel.find({
+            chat: messagePayload.chat
+        });
+        console.log(chatHistory)
+        /* We can not pass short term history directly AI dot't read it  */
+        // console.log('Chat History:', chatHistory.map(item => {
+        //     return { //The syntax is as par GEMINI docs
+        //         role: item.role,
+        //         parts: [{ text: item.content }]
+        //     }
+        // }))
+
+        // const response = await aiService.generateResponse(messagePayload.content);
+        /* Now are provide chat history to AI  */
+        const response = await aiService.generateResponse(chatHistory.map(item => {
+            return { //The syntax is as par GEMINI docs
+                role: item.role,
+                parts: [{ text: item.content }]
+            }
+        })
+);
 
         /* Save model response */
         await messageModel.create({
