@@ -9,6 +9,7 @@ const aiService = require("../services/ai.service");
 
 /* Vector Database */
 const { createMemory, queryMemory} = require("../services/vector.service");
+const { text } = require("express");
 
 
 
@@ -61,10 +62,12 @@ function initSocketServer(httpServer) {
         const memory = await queryMemory({
             queryVector:  vectors,
             limit: 3,
-            metadata: {}
+            metadata: {
+            //    user: socket.user._id   
+            }
         })
 
-        console.log(memory);
+        // console.log(memory);
 
         await createMemory({
             vectors,
@@ -85,6 +88,26 @@ function initSocketServer(httpServer) {
         }).sort({ createdAt: -1}).limit(20).lean()).reverse()
         /* Limit How many message it remember*/
 
+        /* STM we give when we call AI to response  */
+        const stm = chatHistory.map(item => {
+            return { //The syntax is as par GEMINI docs
+                role: item.role,
+                parts: [{ text: item.content }]
+            }
+        })
+
+        /* LTM we give with STM */
+        const ltm = [{
+            role: "user",
+            parts: [ {text: `
+                these are some previous messages from the chat, use them to generate a response
+
+                ${memory.map(item => item.metadata.text).join("\n")}
+
+                `}]
+        }]
+
+
         // console.log(chatHistory)
         /* We can not pass short term history directly AI dot't read it  */
         // console.log('Chat History:', chatHistory.map(item => {
@@ -95,14 +118,12 @@ function initSocketServer(httpServer) {
         // }))
 
         // const response = await aiService.generateResponse(messagePayload.content);
+
+       console.log(ltm[0])
+       console.log(stm)
+  
         /* Now are provide chat history to AI  */
-        const response = await aiService.generateResponse(chatHistory.map(item => {
-            return { //The syntax is as par GEMINI docs
-                role: item.role,
-                parts: [{ text: item.content }]
-            }
-        })
-);
+        const response = await aiService.generateResponse([...ltm, ...stm]);
 
         /* Save model response */
         const responseMessage = await messageModel.create({
