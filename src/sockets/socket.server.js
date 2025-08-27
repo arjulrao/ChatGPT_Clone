@@ -58,6 +58,13 @@ function initSocketServer(httpServer) {
         const vectors = await aiService.generateVector(messagePayload.content);
 
         // console.log("Vectors generated", vectors);
+        const memory = await queryMemory({
+            queryVector:  vectors,
+            limit: 3,
+            metadata: {}
+        })
+
+        console.log(memory);
 
         await createMemory({
             vectors,
