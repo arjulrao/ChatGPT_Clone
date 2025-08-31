@@ -1,0 +1,301 @@
+@import url('./styles/theme.css');
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  color-scheme: light dark;
+  /* hint native UI */
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Layout helpers */
+.center-min-h-screen {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+}
+
+.auth-card {
+  /* Enforce a consistent card width across auth pages (desktop) and remain responsive on small screens */
+  width: var(--auth-card-width, 520px);
+  max-width: 100%;
+  min-width: 320px;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: clamp(var(--space-5), 5vw, var(--space-8));
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Brand header outside of the card */
+.auth-wrap {
+  display: flex;
+  flex-direction: column;
+  /* slightly tighter vertical rhythm so containers don't feel too tall */
+  gap: var(--space-4);
+  align-items: center;
+}
+
+/* Ensure the brand + card container is constrained to the same width across pages */
+.auth-wrap {
+  width: 100%;
+  max-width: var(--auth-card-width, 520px);
+  box-sizing: border-box;
+  padding: 0 var(--space-2);
+}
+
+/* On narrow viewports make the card and wrapper full width with inner padding so layout remains usable */
+@media (max-width: 560px) {
+  /* Make auth containers wider on mobile: allow them to grow up to the desktop card width
+     but not exceed the viewport (keeps comfortable side gutters). This prevents the
+     form from feeling too slim on larger phones while remaining fully responsive. */
+  .auth-wrap,
+  .auth-card {
+    width: min(96vw, var(--auth-card-width, 520px));
+    max-width: 96vw;
+    margin: 0 auto;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+    box-sizing: border-box;
+  }
+}
+
+/* Desktop: explicitly set both wrapper and card to the same fixed width so they match visually */
+@media (min-width: 561px) {
+  .auth-wrap,
+  .auth-card {
+    width: 480px;
+    max-width: 480px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Reduce visual difference from headings/spacing by normalizing top spacing */
+  .brand {
+    margin-bottom: 0;
+  }
+}
+
+.brand {
+  text-align: center;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.brand p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.auth-header {
+  text-align: center;
+}
+
+.auth-header h1 {
+  margin: 0 0 var(--space-2);
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.auth-sub {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+form.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+form.auth-form .field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+form.auth-form label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+form.auth-form input {
+  font: inherit;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+form.auth-form input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--color-focus-ring);
+  background: var(--color-bg);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  width: 100%;
+}
+
+form.auth-form .field-group input {
+  width: 100%;
+}
+
+/* Ensure long placeholder / values don't overflow */
+.auth-card input {
+  min-width: 0;
+}
+
+/* Tighten vertical rhythm slightly on narrow screens */
+@media (max-width: 380px) {
+  .auth-card {
+    padding: var(--space-6) var(--space-5);
+  }
+}
+
+@media (max-width: 520px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+button.primary-btn {
+  appearance: none;
+  cursor: pointer;
+  /* Use the theme's surface border so the button has a subtle outline in both themes */
+  border: 1px solid var(--color-border);
+  background: var(--btn-bg);
+  color: #fff;
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  /* smoother, lighter transitions and hint to the browser about changing properties */
+  transition: background .18s ease, transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  will-change: transform, box-shadow, filter;
+}
+
+button.primary-btn:hover {
+  /* Softer hover: gentler lift and lighter shadow */
+  background: var(--btn-bg-hover);
+  filter: brightness(1.01);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10,20,30,0.08);
+  /* slightly emphasize the border on hover for depth */
+  border-color: color-mix(in srgb, var(--color-border) 60%, rgba(255,255,255,0.1) 40%);
+}
+
+button.primary-btn:focus {
+  outline: none;
+  box-shadow: var(--color-focus-ring);
+  border-color: var(--color-primary);
+}
+
+button.primary-btn:active {
+  /* subtle press feedback */
+  transform: translateY(0.5px);
+}
+
+button.primary-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.auth-alt {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.auth-card {
+  /* Enforce a consistent card width across auth pages (desktop) and remain responsive on small screens */
+  width: var(--auth-card-width, 520px);
+  max-width: 100%;
+  min-width: 320px;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  /* reduced padding to avoid tall card height */
+  padding: clamp(var(--space-4), 3vw, var(--space-6));
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  /* keep cards from becoming visually too tall; allow internal scrolling if content exceeds */
+  max-height: 76vh;
+  overflow-y: auto;
+}
+.theme-toggle.global {
+  display: inline-grid;
+  place-items: center;
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  left: auto;
+  z-index: 999;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xs);
+  transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+
+.theme-toggle.global:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+/* Smooth theme transition */
+html {
+  transition: background-color .3s, color .3s;
+}
+
+body,
+.auth-card,
+input,
+button {
+  transition: background-color .3s, color .3s, border-color .3s;
+}

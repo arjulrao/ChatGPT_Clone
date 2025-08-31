@@ -1,0 +1,105 @@
+/* Theme tokens for the app. This file defines color variables and theme palettes.
+   The app sets `data-theme` on <html> to 'light' or 'dark' — explicit theme values
+   below take precedence over system preference rules. */
+
+:root {
+  /* Spacing & radius */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+
+  /* Typography */
+  --font-sans: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Elevation */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 6px 18px rgba(11, 15, 25, 0.06);
+
+  /* UI layout tokens */
+  --auth-card-width: 520px;
+
+
+  /* Primary color tokens (used by components) */
+  /* These default values are neutral; specific themes override them. */
+  --color-bg: #ffffff;
+  --color-bg-alt: #f6f8fb;
+  --color-surface: #ffffff;
+  --color-border: #e6ecf2;
+  --color-text: #0f1724;
+  --color-text-muted: #52606d;
+
+  /* Accent colors (will be remapped per theme) */
+  --color-primary: #00AFB9; /* teal (will be tuned per theme) */
+  --color-secondary: #F07167; /* coral/peach */
+
+  /* Derived/utility tokens */
+  --color-focus-ring: 0 0 0 4px rgba(0, 175, 185, 0.16);
+
+  /* Gradient tokens used for primary buttons and accents */
+  --color-primary-gradient: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  --btn-bg: var(--color-primary-gradient);
+  --btn-bg-hover: linear-gradient(90deg, color-mix(in srgb, var(--color-primary) 75%, var(--color-secondary) 25%), var(--color-secondary));
+}
+
+/* System dark preference (fallback) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #071018;
+    --color-bg-alt: #071b20;
+    --color-surface: #0b1a1d;
+    --color-border: #123238;
+    --color-text: #e6f6f6;
+    --color-text-muted: #93b0b1;
+    --color-focus-ring: 0 0 0 4px rgba(0,175,185,0.12);
+    --shadow-xs: 0 1px 2px rgba(0,0,0,0.6);
+    --shadow-sm: 0 6px 18px rgba(0,0,0,0.6);
+  }
+}
+
+/* Explicit theme overrides. When the app sets data-theme on <html>, these win. */
+
+:root[data-theme='light'],
+:root[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-bg-alt: #f6fbfb;
+  --color-surface: #ffffff;
+  --color-border: #e6eef0;
+  --color-text: #062425;
+  --color-text-muted: #556e6f;
+  --color-primary: #00AFB9;
+  --color-secondary: #F07167;
+  --color-primary-gradient: linear-gradient(90deg, #00AFB9 0%, #6ae0d7 40%, #F07167 100%);
+  --btn-bg: var(--color-primary-gradient);
+  --btn-bg-hover: linear-gradient(90deg,#00a6a9 0%, #f26f5f 100%);
+  --color-focus-ring: 0 0 0 4px rgba(0,175,185,0.14);
+}
+
+:root[data-theme='dark'],
+:root[data-theme="dark"] {
+  --color-bg: #041011;
+  --color-bg-alt: #07181a;
+  --color-surface: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  --color-border: rgba(255,255,255,0.04);
+  --color-text: #eafaf9;
+  --color-text-muted: #9fd5d2;
+  --color-primary: #00AFB9;
+  --color-secondary: #F07167;
+  --color-primary-gradient: linear-gradient(90deg, #00AFB9 0%, #2fd4c7 45%, #F07167 100%);
+  --btn-bg: var(--color-primary-gradient);
+  --btn-bg-hover: linear-gradient(90deg,#00a6a9 0%, #f26f5f 100%);
+  --color-focus-ring: 0 0 0 4px rgba(0,175,185,0.12);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.6);
+  --shadow-sm: 0 6px 18px rgba(0,0,0,0.6);
+}
