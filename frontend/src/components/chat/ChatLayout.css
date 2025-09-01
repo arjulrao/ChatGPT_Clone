@@ -1,0 +1,260 @@
+/* Base layout */
+.chat-layout {
+    display: flex;
+    height: 100dvh;
+    background: var(--color-bg);
+    font-size: var(--text-base);
+}
+
+.chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100dvh;
+    padding-top: calc(52px + env(safe-area-inset-top, 0));
+    position: relative;
+}
+
+@media (min-width: 960px) {
+    .chat-main {
+    padding-top: 32px; /* desktop spacer so first message not cramped */
+    }
+}
+
+@media (min-width: 960px) {
+    .chat-layout {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 959px) {
+    .chat-layout {
+        flex-direction: column;
+    }
+}
+
+/* Minimal variant theme-aware (adjusts with [data-theme]) */
+[data-theme='dark'] .chat-layout.minimal {
+    --color-bg: #000;
+    --color-bg-alt: #0d0d0d;
+    --color-surface: #050505;
+    --color-border: #1e1e1e;
+    --color-text: #f5f5f5;
+    --color-text-muted: #7a7a7a;
+    --color-accent: #ffffff;
+}
+
+[data-theme='light'] .chat-layout.minimal {
+    --color-bg: #f8f9fa;
+    --color-bg-alt: #ffffff;
+    --color-surface: #ffffff;
+    --color-border: #dcdfe3;
+    --color-text: #1d1f23;
+    --color-text-muted: #5c6570;
+    --color-accent: #0b62ff;
+}
+
+.chat-layout.minimal {
+    background: linear-gradient(180deg, #000 0%, #050505 60%, #050505 100%);
+    color: var(--color-text);
+}
+
+.chat-layout.minimal .chat-main {
+    background: transparent;
+}
+
+.chat-layout.minimal .chat-mobile-bar {
+    background: #000;
+    border-color: #1e1e1e;
+}
+
+/* Theme toggle: only raise stacking so it's clickable; keep default styling from App.css */
+.chat-layout .theme-toggle.global { z-index: 120; }
+
+/* Desktop-only new chat button */
+.new-chat-desktop {
+    display: none;
+}
+
+@media (min-width: 960px) {
+    .new-chat-desktop {
+    display: inline-grid;
+    position: fixed;
+    left: 16px; /* move fully to top-left */
+    top: 8px;
+    z-index: 80; /* above hidden/overlapping elements */
+    min-width: 100px;
+    height: 34px;
+    padding: 0 16px;
+    border-radius: 8px;
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.45);
+    color: #f5f5f5;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    backdrop-filter: blur(4px);
+    }
+    /* Keep mobile bar hidden (already handled in its own file), ensure menu icon hidden separately */
+    .chat-mobile-bar .chat-icon-btn[aria-label="Toggle chat history"] { display:none; }
+}
+
+@media (min-width: 960px) {
+    .new-chat-desktop:hover {
+        background: #151515;
+        border-color: #3a3a3a;
+    }
+    .new-chat-desktop:active {
+        background: #111;
+    }
+    .new-chat-desktop:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+    }
+}
+
+.chat-layout.minimal .chat-icon-btn {
+    background: #0d0d0d;
+    border-color: #1f1f1f;
+    color: var(--color-text);
+}
+
+.chat-layout.minimal .chat-icon-btn:hover {
+    background: #141414;
+}
+
+.chat-layout.minimal .chat-sidebar {
+    background: #000;
+    border-color: #1e1e1e;
+}
+
+.chat-layout.minimal .sidebar-header {
+    border-color: #1e1e1e;
+}
+
+.chat-layout.minimal .small-btn {
+    background: #111;
+    border-color: #2a2a2a;
+}
+
+.chat-layout.minimal .small-btn:hover {
+    background: #181818;
+}
+
+.chat-layout.minimal .chat-list-item {
+    background: #0d0d0d;
+    border-color: #1a1a1a;
+}
+
+.chat-layout.minimal .chat-list-item:hover {
+    background: #141414;
+}
+
+.chat-layout.minimal .chat-list-item.active {
+    border-color: #fff;
+    box-shadow: 0 0 0 1px #fff;
+}
+
+.chat-layout.minimal .msg-bubble {
+    background: #0d0d0d;
+    border-color: #1e1e1e;
+    color: var(--color-text);
+}
+
+.chat-layout.minimal .msg-user .msg-bubble {
+    background: #111;
+    border-color: #2a2a2a;
+    color: #f8f8f8;
+}
+
+.chat-layout.minimal .msg-role {
+    color: #5a5a5a;
+}
+
+.chat-layout.minimal .msg-error .msg-bubble {
+    border-color: #ff4d4d;
+    color: #ff4d4d;
+}
+
+/* Welcome (empty state) */
+.chat-welcome {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+        pointer-events: none; /* prevents overlay blocking mobile bar */
+    text-align: center;
+}
+    .chat-welcome .auth-card,
+    .chat-welcome .auth-wrap,
+    .chat-welcome button {
+        pointer-events: auto; /* allow interactive children inside the welcome area to receive pointer events */
+    }
+
+.chat-welcome h1 {
+    font-size: 2.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0;
+    background: linear-gradient(90deg, #fafafa, #5a5a5a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.chat-welcome p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #6a6a6a;
+    max-width: 420px;
+    line-height: 1.4;
+}
+
+.chat-welcome .chip {
+    background: #111;
+    border: 1px solid #1f1f1f;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #b5b5b5;
+}
+
+/* Scrollbar minimal styling (webkit) */
+.chat-layout.minimal .messages::-webkit-scrollbar {
+    width: 10px;
+}
+
+.chat-layout.minimal .messages::-webkit-scrollbar-track {
+    background: #000;
+}
+
+.chat-layout.minimal .messages::-webkit-scrollbar-thumb {
+    background: #1e1e1e;
+    border-radius: 6px;
+}
+    .chat-mobile-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        padding: env(safe-area-inset-top, 0) var(--space-4) 0 var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+        background: rgba(5, 5, 5, 0.9);
+        backdrop-filter: blur(10px);
+        z-index: 60; /* raised so it sits above welcome overlay */
+        box-sizing: border-box;
+}
