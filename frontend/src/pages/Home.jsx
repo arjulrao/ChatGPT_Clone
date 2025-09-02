@@ -1,47 +1,92 @@
 import React, { useEffect, useState } from 'react';
+import { io } from "socket.io-client";
 import ChatMobileBar from '../components/chat/ChatMobileBar.jsx';
 import ChatSidebar from '../components/chat/ChatSidebar.jsx';
 import ChatMessages from '../components/chat/ChatMessage.jsx';
 import ChatComposer from '../components/chat/ChatComposer.jsx';
 import '../components/chat/ChatLayout.css';
 import { fakeAIReply } from '../components/chat/aiClient.js';
+import { useDispatch, useSelector } from 'react-redux';
+import axios  from 'axios';
+
+import {
+  ensureInitialChat,
+  startNewChat,
+  selectChat,
+  setInput,
+  sendingStarted,
+  sendingFinished,
+  addUserMessage,
+  addAIMessage,
+  setChats
+} from '../store/chatSlice.js';
 
 const Home = () => {
-  // Local, in-memory state (no redux, no socket) so UI can be tested offline.
-  const [chats, setChats] = useState(() => [
-    { _id: 'chat-1', title: 'Main', messages: [] }
-  ]);
-  const [activeChatId, setActiveChatId] = useState(chats[0]._id);
-  const [input, setInput] = useState('');
-  const [isSending, setIsSending] = useState(false);
-  const [ sidebarOpen, setSidebarOpen ] = useState(false);
+const dispatch = useDispatch();
+const chats = useSelector(state => state.chat.chats);
+const activeChatId = useSelector(state => state.chat.activeChatId);
+const input = useSelector(state => state.chat.input);
+const isSending = useSelector(state => state.chat.isSending);
+const [ sidebarOpen, setSidebarOpen ] = React.useState(false);
+const [ socket, setSocket ] = useState(null);
 
-  const activeChat = chats.find(c => c._id === activeChatId) || null;
+const activeChat = chats.find(c => c.id === activeChatId) || null;
 
-  const [ messages, setMessages ] = useState([]);
+const [ messages, setMessages ] = useState([]);
 
-  const handleNewChat = async () => {
+const handleNewChat = async () => {
     // Local-only: create a new chat object in memory
     let title = window.prompt('Enter a title for the new chat:', '');
     if (title) title = title.trim();
     if (!title) return;
 
-    const newChat = { _id: `chat-${Date.now()}`, title, messages: [] };
-    setChats(prev => [newChat, ...prev]);
-    setActiveChatId(newChat._id);
-    setMessages([]);
-    setSidebarOpen(false);
+    const response = await axios.post("http://localhost:3000/auth/chat", {
+      title
+    },{
+      withCredentials: true
+    })
+    console.log(response.data)
+
+    getMessages(response.data.chat._id);
+    dispatch(startNewChat(response.data.chat));
+    setSidebarOpen(false)
   }
 
   // Ensure messages reflect active chat
-  useEffect(() => {
-    if (activeChat) setMessages(activeChat.messages || []);
-  }, [activeChat]);
+   useEffect(() => {
+
+    axios.get("http://localhost:3000/auth/chat", { withCredentials: true })
+      .then(response => {
+        dispatch(setChats(response.data.chats.reverse()));
+      })
+
+    const tempSocket = io("https://cohort-1-project-chat-gpt.onrender.com", {
+      withCredentials: true,
+    })
+
+    tempSocket.on("ai-response", (messagePayload) => {
+      console.log("Received AI response:", messagePayload);
+
+      setMessages((prevMessages) => [ ...prevMessages, {
+        type: 'ai',
+        content: messagePayload.content
+      } ]);
+
+      dispatch(sendingFinished());
+    });
+
+    setSocket(tempSocket);
+
+  }, [dispatch]);
+
+
 
   const sendMessage = async () => {
-    const trimmed = input.trim();
-    if (!trimmed || !activeChatId || isSending) return;
-    setIsSending(true);
+
+      const trimmed = input.trim();
+      console.log("Sending message:", trimmed);
+      if (!trimmed || !activeChatId || isSending) return;
+      dispatch(sendingStarted());
 
     const newUserMsg = { type: 'user', content: trimmed };
     const newMessages = [ ...messages, newUserMsg ];

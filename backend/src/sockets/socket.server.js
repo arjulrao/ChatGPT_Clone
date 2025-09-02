@@ -172,11 +172,11 @@ module.exports = initSocketServer
 function initSocketServer(httpServer) {
 
     const io = new Server(httpServer, {
-        // cors: {
-        //     origin: "http://localhost:5173",
-        //     allowedHeaders: [ "Content-Type", "Authorization" ],
-        //     credentials: true
-        // }
+        cors: {
+            origin: "http://localhost:5173",
+            allowedHeaders: [ "Content-Type", "Authorization" ],
+            credentials: true
+        }
     })
 
     io.use(async (socket, next) => {
